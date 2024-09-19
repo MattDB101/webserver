@@ -84,6 +84,27 @@ int main() {
     printf("Client connected\n");
 
 
+    struct http_response {
+        const char* status;
+        const char* header;
+        const char* body;
+    };
+
+    struct http_response response;
+    response.status = "HTTP/1.1 200 OK\r\n";
+    response.header = "\r\n";
+    response.body = "";
+
+    int send_response = send(client_socket, response.status, strlen(response.status), 0);
+
+    if (send_response == -1) {
+        printf("Response failed: %d\n", WSAGetLastError());
+        closesocket(server_socket);
+        WSACleanup();
+        return 1;
+    }
+
+
     closesocket(client_socket);
     closesocket(server_socket);
     WSACleanup();
