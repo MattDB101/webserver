@@ -80,10 +80,10 @@ int main() {
         WSACleanup();
         return 1;
     }
-
     printf("Client connected\n");
 
 
+    // create a response and send it to the client
     struct http_response {
         const char* status;
         const char* header;
@@ -103,6 +103,25 @@ int main() {
         WSACleanup();
         return 1;
     }
+
+
+    // create an empty buffer and read from client socket into it
+    char recv_buf[1024] = {0};
+    int recv_buf_len = sizeof(recv_buf);
+    int recv_res;
+
+    do {
+        recv_res = recv(client_socket, recv_buf, recv_buf_len, 0);
+        if (recv_res > 0) {
+            printf("Bytes received: %d\nMessage:\n%s\n", recv_res, recv_buf);
+        }
+        else if (recv_res == 0) {
+            printf("Client Socket closed.");
+        }
+        else {
+            printf("Receive failed: %d\n", WSAGetLastError());
+        }
+    } while (recv_res > 0);
 
 
     closesocket(client_socket);
